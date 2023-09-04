@@ -1,0 +1,62 @@
+---
+title: "Data 607 - WNBA 2022"
+author: "Shamecca Marshall"
+date: "2023-08-31"
+output:
+  html_document:
+    df_print: paged
+---
+
+### Overview
+### The Data I will be working with for this assignment "2022 WNBA Predictions." This database tracks and records the WNBA teams, who the home team played, their win probability, pre and post game ratings, and score.
+
+The dataset was taken from: https://projects.fivethirtyeight.com/2022-wnba-predictions/
+
+```{r include=FALSE, results='hide'}
+library(tidyverse)
+library(openintro)
+library(conflicted)
+library(dplyr)
+```
+### Load data from GitHub
+```{r echo=TRUE}
+WNBAPredictions2022 = read.table(file="https://raw.githubusercontent.com/Meccamarshall/Data607/main/wnba_elo_latest.csv", header= TRUE,sep=",")
+```
+
+### Reading the data in the Dataframe
+```{r echo=TRUE, results='hide'}
+WNBAPredictions2022 <- data.frame(WNBAPredictions2022$season, WNBAPredictions2022$date, WNBAPredictions2022$playoff, WNBAPredictions2022$neutral, WNBAPredictions2022$status, WNBAPredictions2022$home_team, WNBAPredictions2022$away_team, WNBAPredictions2022$home_team_abbr, WNBAPredictions2022$away_team_abbr, WNBAPredictions2022$home_team_pregame_rati, WNBAPredictions2022$away_team_pregame_rating, WNBAPredictions2022$home_team_winprob, WNBAPredictions2022$away_team_winprob, WNBAPredictions2022$home_team_score, WNBAPredictions2022$away_team_score, WNBAPredictions2022$home_team_postgame_rating, WNBAPredictions2022$away_team_postgame_rating, WNBAPredictions2022$commissioners_cup_final)
+colnames(WNBAPredictions2022) <- c("Season", "Date", "Playoff", "Neutral", "Status", "Home Team", "Away Team", "Home Team Abbr", "Away Team Abbr", "Home Team Pregame Rating", "Away Team Pregame Rating", "Home Team Win prob", "Away Team Win prob","Home Team Score", "Away Team Score", "Home Team Post game Rating", "Away Team Post game Rating", "Commissioners Cup Final")
+WNBAPredictions2022
+```
+
+### Home Team Games
+```{r}
+HomeGame_sub <- subset(WNBAPredictions2022)
+HomeGame_sub <- head(HomeGame_sub, 10)[, c("Home Team", "Away Team", "Home Team Score", "Away Team Score")]
+HomeGame_sub
+```
+
+### Top 5 games with highest home game wins
+```{r}
+HomeGame <- arrange(HomeGame_sub, desc(HomeGame_sub$`Home Team Score`))
+HomeGame <- head(HomeGame_sub, 5)[, c("Home Team Score" , "Away Team Score", "Home Team", "Away Team")]
+HomeGame
+```
+
+### Away Team Games
+```{r}
+AwayGame_sub <- subset(WNBAPredictions2022)
+AwayGame_sub <- head(AwayGame_sub,10)[, c("Home Team", "Away Team", "Home Team Score", "Away Team Score")]
+AwayGame_sub
+```
+
+### Top 5 games with highest away game wins
+```{r}
+AwayGame <- arrange(AwayGame_sub, desc(AwayGame_sub$`Away Team Score`))
+AwayGame <- head(AwayGame_sub,5)[, c("Home Team Score" , "Away Team Score", "Home Team", "Away Team")]
+AwayGame
+```
+
+### Conclusion
+### The Las Vegas Aces won the 2022 championship
