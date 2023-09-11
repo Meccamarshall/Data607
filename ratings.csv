@@ -1,0 +1,31 @@
+ratingID,names,nameID,movie,movieID,ratings,ratingdetails
+1,Naima,1,Barbie,1,2,Hated it
+2,Naima,1,Little Mermaid,2,5,Loved it
+3,Naima,1,Strays,3,1,Haven't seen it
+4,Naima,1,The Pass,4,3,Didn't hate it
+5,Naima,1,Air,5,1,Haven't seen it
+6,Nia,1,Praise This,6,5,Loved it
+7,Nia,2,Barbie,1,4,Liked it
+8,Nia,2,Little Mermaid,2,5,Loved it
+9,Nia,2,Strays,3,2,Hated it
+10,Nia,2,The Pass,4,1,Haven't seen it
+11,Nia,2,Air,5,2,Hated it
+12,Nia,2,Praise This,6,3,Didn't hate it
+13,Myles,3,Barbie,1,1,Haven't seen it
+14,Myles,3,Little Mermaid,2,4,Liked it
+15,Myles,3,Strays,3,3,Didn't hate it
+16,Myles,3,The Pass,4,3,Didn't hate it
+17,Myles,3,Air,5,5,Loved it
+18,Myles,3,Praise This,6,4,Liked it
+19,Essence,4,Barbie,1,3,Didn't hate it
+20,Essence,4,Little Mermaid,2,5,Loved it
+21,Essence,4,Strays,3,2,Hated it
+22,Essence,4,The Pass,4,4,Liked it
+23,Essence,4,Air,5,1,Haven't seen it
+24,Essence,4,Praise This,6,5,Loved it
+25,Carter,5,Barbie,1,3,Didn't hate it
+26,Carter,5,Little Mermaid,2,5,Loved it
+27,Carter,5,Strays,3,2,Hated it
+28,Carter,5,The Pass,4,1,Haven't seen it
+29,Carter,5,Air,5,3,Didn't hate it
+30,Carter,5,Praise This,6,5,Loved it
