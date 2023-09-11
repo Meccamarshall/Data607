@@ -1,0 +1,31 @@
+surveyID,name,movie,ratingID,rating details,ratings
+1,Naima,Barbie,1,Haven't seen it,2
+1,Naima,Little Mermaid,2,Hated it,5
+1,Naima,Strays,3,Didn't hate it,1
+1,Naima,The Pass,4,Neutral,3
+1,Naima,Air,5,Liked it,1
+1,Naima,Praise This,6,Loved it,5
+2,Nia,Barbie,1,Haven't seen it,4
+2,Nia,Little Mermaid,2,Hated it,5
+2,Nia,Strays,3,Didn't hate it,2
+2,Nia,The Pass,4,Neutral,1
+2,Nia,Air,5,Liked it,2
+2,Nia,Praise This,6,Loved it,3
+3,Myles,Barbie,1,Haven't seen it,1
+3,Myles,Little Mermaid,2,Hated it,4
+3,Myles,Strays,3,Didn't hate it,3
+3,Myles,The Pass,4,Neutral,3
+3,Myles,Air,5,Liked it,5
+3,Myles,Praise This,6,Loved it,4
+4,Essence,Barbie,1,Haven't seen it,3
+4,Essence,Little Mermaid,2,Hated it,5
+4,Essence,Strays,3,Didn't hate it,2
+4,Essence,The Pass,4,Neutral,4
+4,Essence,Air,5,Liked it,1
+4,Essence,Praise This,6,Loved it,5
+5,Carter,Barbie,1,Haven't seen it,3
+5,Carter,Little Mermaid,2,Hated it,5
+5,Carter,Strays,3,Didn't hate it,2
+5,Carter,The Pass,4,Neutral,1
+5,Carter,Air,5,Liked it,3
+5,Carter,Praise This,6,Loved it,5
