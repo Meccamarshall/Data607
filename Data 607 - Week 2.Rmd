@@ -1,0 +1,68 @@
+---
+title: "Week 2 - Data 607"
+author: "Shamecca Marshall"
+date: "2023-09-11"
+output: html_document
+runtime: shiny
+---
+
+```{r include=FALSE}
+install.packages("RCurl")
+install.packages("RODBC")
+install.packages("sqldf")
+install.packages("DBI")
+library(RMySQL)
+library(RODBC)
+library("dplyr")
+library("dbplyr")
+library(sqldf)
+library(DBI)
+```
+
+# Connect to SQL
+
+```{r}
+mysqlconnection = dbConnect(RMySQL::MySQL(),
+                            dbname='movies',
+                            host='localhost',
+                            port=3306,
+                            user='root',
+                            password='root')
+
+```
+
+# Connect to database
+
+```{r}
+myLocalPassword <- 'root'
+my.database = dbConnect(MySQL(), user='root', password = myLocalPassword, dbname='movies', host='localhost')
+dbListTables(my.database)
+```
+
+# Display Viewers
+
+```{r}
+Viewers <- dbSendQuery(my.database, "SELECT * FROM viewers;")
+dbFetch(Viewers)
+```
+
+# Display Movies
+
+```{r}
+Movies <- dbSendQuery(my.database, "SELECT * FROM movie;")
+dbFetch(Movies)
+```
+
+# Display Rating Details
+
+```{r}
+RatingDetails <- dbSendQuery(my.database, "SELECT * FROM ratingdetails;")
+dbFetch(RatingDetails)
+```
+
+# Display Movie Ratings
+
+```{r}
+MovieRatings <- dbSendQuery(my.database, "SELECT * FROM ratings;")
+dbFetch(MovieRatings)
+```
