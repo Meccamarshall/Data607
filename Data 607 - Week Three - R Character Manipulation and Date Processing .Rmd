@@ -1,0 +1,82 @@
+---
+title: "Data 607 - Week 3 R Character Manipulation and Date Processing"
+author: "Shamecca Marshall"
+date: "2023-08-31"
+output:
+  pdf_document: default
+  html_document:
+    df_print: paged
+  word_document: default
+---
+
+## 1. Using the 173 majors listed in fivethirtyeight.com’s College Majors dataset [https://fivethirtyeight.com/features/the-economic-guide-to-picking-a-college-major/], provide code that identifies the majors that contain either "DATA" or "STATISTICS"
+
+```{r include=FALSE, results='hide'}
+library(tidyverse)
+library(openintro)
+library(conflicted)
+library(dplyr)
+```
+# Load data from GitHub
+```{r echo=TRUE}
+majors = read.csv(file="https://raw.githubusercontent.com/fivethirtyeight/data/master/college-majors/majors-list.csv", header= TRUE,sep=",")
+str(majors)
+```
+
+# Provide code that identifies the majors that contain either "DATA" or "STATISTICS"
+```{r echo=TRUE, results='hide'}
+grep(pattern = 'data|statistics',majors$Major, value = TRUE, ignore.case = TRUE)
+```
+
+## 2. Write code that transforms the data below:
+[1] "bell pepper"  "bilberry"     "blackberry"   "blood orange"
+[5] "blueberry"    "cantaloupe"   "chili pepper" "cloudberry"  
+[9] "elderberry"   "lime"         "lychee"       "mulberry"    
+[13] "olive"        "salal berry"
+Into a format like this:
+c("bell pepper", "bilberry", "blackberry", "blood orange", "blueberry", "cantaloupe", "chili pepper", "cloudberry", "elderberry", "lime", "lychee", "mulberry", "olive", "salal berry")
+```{r}
+fruits_raw = '[1] "bell pepper"  "bilberry"     "blackberry"   "blood orange"
+
+[5] "blueberry"    "cantaloupe"   "chili pepper" "cloudberry"  
+
+[9] "elderberry"   "lime"         "lychee"       "mulberry"    
+
+[13] "olive"        "salal berry"'
+
+
+fruits_clean = c(scan(text=fruits_raw, what="character", quiet=TRUE))
+fruits_clean = Filter(function(x) !any(grepl("\\[", x)), fruits_clean)
+fruits_clean
+```
+
+## 3. Describe, in words, what these expressions will match:
+(.)\1\1 - Matches string with the same character repeated three times ex. 1215-2999 it will match 999
+
+
+(..)\1 - Matches string format that has two characters repeated twice in the same order ex. 211414 it will match 1414
+
+"(.).\\1.\\1" - Matches a character with the first character followed by the first character, followed by any other character, followed by the first character e.g. in string ex. 212329549 will match 21232
+
+"(.)(.)(.).*\\3\\2\\1" - Matches three characters that are following by zero or more characters and then have the pattern in reverse order. ex 214feb1994pink1215 it will match feb1994pink
+
+
+
+### 4. Construct regular expressions to match words that:
+# Start and end with the same character.
+```{r}
+s<- c("tweet", "tomorrow", "Mississippi", "appropriate", "educate", "dazed", "eleven", "error", "nanny", "church")
+```
+
+```{r}
+str_view(s, "^(.)((.*\\1$)|\\1$)")
+```
+# Contain a repeated pair of letters (e.g. "church" contains "ch" repeated twice.)
+```{r}
+str_view(s, "([A-Za-z][A-Za-z]).*\\1")
+```
+
+# Contain one letter repeated in at least three places (e.g. “eleven” contains three “e”s.)
+```{r}
+str_view(s, "([A-Za-z]).*\\1.*\\1")
+```
