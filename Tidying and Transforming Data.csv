@@ -1,4 +1,4 @@
-Airline,Delay Status,Los Angeles,Phoenix,San Diego,San Franciso,Seattle
+Airline, Status,Los Angeles,Phoenix,San Diego,San Franciso,Seattle
 Alaska,On_time,497,221,212,503,1841
 ,Delayed,62,12,20,102,305
 ,,,,,,
