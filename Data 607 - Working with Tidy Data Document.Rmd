@@ -1,0 +1,104 @@
+---
+title: "Working with Tidy Data"
+author: "Shamecca Marshall"
+date: "2023-10-01"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+## Data gathering, tidying and transformation
+```{r, results = "hide"}
+rm(list = ls())
+library(plyr)
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+library(reshape2)
+library(tidyselect)
+```
+
+## Loading Data into R
+```{r}
+data<- read.csv("https://raw.githubusercontent.com/Meccamarshall/Data607/main/flight%20status%20data%20607.csv", sep = ",", header = TRUE)
+data
+```
+
+## Removing the NA’s
+Since there is a row with NA, I want remove that from my data set.
+```{r}
+data<-drop_na(data,)
+data
+```
+
+```{r}
+data$Airline[data$Airline==""]<-c("Alaska","AM West")
+data
+```
+
+## Transform data from wide format to long format
+Since I need to compare the delayed time, I reformatted this to the long way that way it would be easier for me to view the dataset
+```{r}
+data1<- data %>% gather(key = Destination, value= Count, c(3:7))
+```
+
+```{r}
+data1
+```
+## Filtering by delays
+Since I am only interested in viewing the delays, I am hiding the on time data from the data frame.
+```{r}
+data2<-filter(data1, Delay.Status=="delayed")
+```
+
+```{r}
+data2
+```
+## Comparisons
+```{r}
+data2$Count = as.numeric(as.character(data2$Count))
+data2
+```
+
+```{r}
+summary(data2$Count)
+```
+
+```{r}
+summarise(data2, mean=mean(Count), sd=sd(Count))
+```
+From this given data set, it can be seen that that there is an average of 129 flight delays with a standard deviation of approximately 130.
+
+```{r}
+barplot(data2$Count)
+```
+
+## Viewing Alaska delays
+```{r}
+library(ggplot2)
+Alaska_delays<-filter(data2, Airline=="Alaska")
+Alaska_delays
+```
+
+```{r}
+ggplot(Alaska_delays,aes(Destination,Count)) +
+geom_bar(aes(fill = Airline), position = "dodge", stat = "identity", col = "red") + 
+  ylab("Count")
+```
+
+## Viewing AM West delays
+```{r}
+library(ggplot2)
+AM_West_delays<-filter(data2, Airline=="AM West")
+AM_West_delays
+```
+
+```{r}
+ggplot(AM_West_delays,aes(Destination,Count)) +
+geom_bar(aes(fill = Airline), position = "dodge", stat = "identity", col = "red") + 
+  ylab("Count")
+```
+  
+##Conclusion
+
+After carefully analysizing the data in the dataset used in this assignment, Alaska airlines seems to be a more reliable airline with minimal flight delays, compared to AM West airlines.
