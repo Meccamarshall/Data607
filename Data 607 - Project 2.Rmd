@@ -1,0 +1,64 @@
+---
+title: "Data 607 - Project 2"
+author: "Shamecca Marshall"
+date: "2023-10-08"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+The goal of this assignment is to give you practice in preparing different datasets for downstream
+analysis work.
+Your task is to:
+(1) Choose any three of the “wide” datasets identified in the Week 5 Discussion items. (You may
+use your own dataset; please don’t use my Sample Post dataset, since that was used in your
+Week 6 assignment!) For each of the three chosen datasets:
+• Create a .CSV file (or optionally, a MySQL database!) that includes all of the information
+included in the dataset. You’re encouraged to use a “wide” structure similar to how the
+information appears in the discussion item, so that you can practice tidying and
+transformations as described below.
+• Read the information from your .CSV file into R, and use tidyr and dplyr as needed to tidy
+and transform your data. [Most of your grade will be based on this step!]
+• Perform the analysis requested in the discussion item.
+• Your code should be in an R Markdown file, posted to rpubs.com, and should include
+narrative descriptions of your data cleanup work, analysis, and conclusions. 
+
+```{r include=FALSE}
+library(tidyverse)
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+```
+
+## Load CVS file from github
+```{r}
+theUrl <- "https://raw.githubusercontent.com/Meccamarshall/Data607/main/unemployment%20rate.csv"
+
+df <- read.csv(file = theUrl, header = TRUE, sep = ",")
+head(df)
+```
+
+# Viewing column
+```{r}
+colnames(df)
+```
+# Renaming Column
+```{r}
+library(tidyr)
+df2<-rename(df,State=State.Area, Unemployment_percentage=Percent.....of.Labor.Force.Unemployed.in.State.Area)
+head(df2)
+```
+
+# Analysis of data will be performed by creating visualization of monthly unemployment rates of a single state for time from 1976-2020 The state chosen is California. Based on the chart, California has had a unemployment rate hovering between 3.8% and 16.1% between 1976 and 2020 The highest unemployment time for California was during the months of April 2020 and August 2020 during covid-19.
+```{r}
+library(ggplot2)
+California<-subset(df2,State=="California")
+ggplot(California, aes(x=California$Year, y=California$Unemployment_percentage, fill=California$Month)) + geom_line(color = "hotpink")
+```
+
+
+
