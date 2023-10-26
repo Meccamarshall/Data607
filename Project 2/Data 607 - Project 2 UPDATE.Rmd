@@ -1,0 +1,193 @@
+---
+title: "Data 607 - Project 2"
+author: "Shamecca Marshall"
+date: "2023-10-08"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+The goal of this assignment is to give you practice in preparing different datasets for downstream
+analysis work.
+Your task is to:
+(1) Choose any three of the “wide” datasets identified in the Week 5 Discussion items. (You may
+use your own dataset; please don’t use my Sample Post dataset, since that was used in your
+Week 6 assignment!) For each of the three chosen datasets:
+• Create a .CSV file (or optionally, a MySQL database!) that includes all of the information
+included in the dataset. You’re encouraged to use a “wide” structure similar to how the
+information appears in the discussion item, so that you can practice tidying and
+transformations as described below.
+• Read the information from your .CSV file into R, and use tidyr and dplyr as needed to tidy
+and transform your data. [Most of your grade will be based on this step!]
+• Perform the analysis requested in the discussion item.
+• Your code should be in an R Markdown file, posted to rpubs.com, and should include
+narrative descriptions of your data cleanup work, analysis, and conclusions. 
+
+```{r include=FALSE}
+library(tidyverse)
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+library(gapminder)
+library(reshape2)
+library(ggpubr)
+library(usmap)
+library(lubridate)
+library(kableExtra)
+```
+
+### DATASET 1
+
+# Loading Data from Github
+This data was found on Kaggle.com
+```{r}
+candy_df <- read.csv('https://raw.githubusercontent.com/Meccamarshall/Data607/main/Project%202/Candydata.csv', stringsAsFactors = FALSE)
+head(candy_df)
+```
+
+### Cleaning the Data
+```{r}
+candy1 <- candy_df %>% select(starts_with('Q2'), starts_with('Q6')) %>%
+  rename(gender = Q2..GENDER) %>%
+  gather('candy_name','preference',2:50) %>% 
+  mutate(candy_name= str_replace(candy_name, 'Q6\\.{3}(.+)','\\1'),
+         preference = str_trim(preference, side = 'both')) %>%
+  filter(!preference == '' & (gender == 'Male' | gender == 'Female')) %>%
+  group_by(gender,candy_name,preference) %>%
+  tally() %>%
+  spread(preference,n)
+candy1
+```
+
+### Creating Visuals and Analyzing Data
+Viewing the top five candies that are "meh" to both guys and girls.
+```{r}
+plot1=ggplot(arrange(filter(candy1, gender == 'Female'),desc(MEH))[1:5,], aes(x=reorder(candy_name, MEH), y = MEH, fill = MEH))+
+  geom_bar(stat = 'identity')+
+  coord_flip()+
+  geom_text(aes(label=MEH),vjust=0.5, hjust=1.00, position = position_dodge(width = 1), color="pink", size = 5)+
+  xlab("Candy Name")+ggtitle("Top Five Candies with 'MEH' by Girls")+
+  scale_fill_gradient(low = 'palevioletred4', high = 'palevioletred')
+
+plot2=ggplot(arrange(filter(candy1, gender == 'Male'),desc(MEH))[1:5,], aes(x=reorder(candy_name, MEH), y = MEH, fill = MEH))+
+  geom_bar(stat = 'identity')+
+  coord_flip()+
+  geom_text(aes(label=MEH),vjust=0.5, hjust=1.00, position = position_dodge(width = 1), color="pink",size = 5)+
+  xlab("Candy Name")+ggtitle("Top Five Candies with 'MEH' by Guys")
+ggarrange(plot1,plot2,nrow=2)
+```
+
+# DATASET 2   
+Importing Data from Github
+```{r}
+Testscores_df <- read_csv('https://raw.githubusercontent.com/Meccamarshall/Data607/main/Project%202/testscores.csv', 
+                          show_col_types = FALSE)
+```
+
+### Creating a dataframe
+```{r}
+Testscores_df <- data.frame(Testscores_df)
+Testscores_df %>% 
+head(10) %>%
+  kable() %>% 
+  kable_styling(bootstrap_options = "striped", font_size = 12, fixed_thead = T) %>%  scroll_box(height = "300px", width = "100%")
+```
+
+### Tidying the Student Test Score Results data
+```{r}
+colnames(Testscores_df) <- c("StudentID","Gender", "EthnicGroup", "ParentEduc", "LunchType", "TestPrep", "MathScore", "ReadingScore", "WritingScore")
+colnames(Testscores_df) <- c("StudentID","Gender", "EthnicGroup", "ParentEduc", "LunchType", "TestPrep", "MathScore", "ReadingScore", "WritingScore")
+Testscores_df%>% 
+head(10) %>%
+  kable() %>% 
+  kable_styling(bootstrap_options = "striped", font_size = 12, fixed_thead = T) %>%  scroll_box(height = "300px", width = "100%")
+```
+
+# DATASET 3 - Subway Riders Annually
+### Load data from github
+
+```{r}
+url <- 'https://raw.githubusercontent.com/Meccamarshall/Data607/main/Project%202/2022%20Subway%20Tables_ul.csv'
+
+MTA_df <- read.csv(file = url)
+
+na.omit(MTA_df)
+
+str(MTA_df)
+```
+
+### Cleaning and Tidying up the dataset
+```{r}
+# Creating new column names
+newcolumn <- c('Station', 2017, 2018, 2019, 2020, 2021, 2022, '2021 - 2022 Net Change', 
+                   '2021 - 2022 % Change', '2022 Rank')
+colnames(MTA_df) <- newcolumn
+
+# Finding borough rows
+borough <- c('The Bronx', 'Brooklyn', 'Manhattan', 'Queens')
+
+rowvalues <- c()
+
+for(i in 1:length(borough)){
+  rowvalues[i] <- rownames(MTA_df[which(MTA_df$'2017' == borough[i]),])
+}
+rowvalues
+```
+
+### Analyzing and creating visuals for the data
+```{r}
+dfBronx <- MTA_df[2:69,]
+dfBronx['Borough'] <- borough[1]
+  
+dfBrooklyn <- MTA_df[71:227,]
+dfBrooklyn['Borough'] <- borough[2]
+
+dfManhattan <- MTA_df[229:349,]
+dfManhattan['Borough'] <- borough[3]
+
+dfQueens <- MTA_df[351:dim(MTA_df)[1],]
+dfQueens['Borough'] <- borough[4]
+
+MTA_df2 <- rbind(dfBronx, dfBrooklyn, dfManhattan, dfQueens)
+
+# Removing commas and transforming characters into integers
+MTA_df2 <- MTA_df2 %>%
+  mutate(x = droplevels(MTA_df2),
+         '2017' = as.integer(str_remove_all(MTA_df2$'2017', ',')),
+         '2018' = as.integer(str_remove_all(MTA_df2$'2018', ',')),
+         '2019' = as.integer(str_remove_all(MTA_df2$'2019', ',')),
+         '2020' = as.integer(str_remove_all(MTA_df2$'2020', ',')),
+         '2021' = as.integer(str_remove_all(MTA_df2$'2021', ',')),
+         '2022' = as.integer(str_remove_all(MTA_df2$'2022', ',')),
+         '2021 - 2022 Net Change' = as.integer(str_remove_all(MTA_df2$'2021 - 2022 Net Change', ',')),
+         '2021 - 2022 % Change' = as.numeric(str_remove_all(MTA_df2$'2021 - 2022 % Change', '%')),
+         '2022 Rank' = as.integer(MTA_df2$'2022 Rank')) %>% 
+select(Borough, colnames(MTA_df2))
+```
+
+
+```{r}
+colnames2 <- c('Borough', 2017, 2018, 2019, 2020, 2021, 2022)
+
+MTA_df3 <- MTA_df2  %>%
+  select(colnames2)
+```
+
+```{r}
+avgMTA <- MTA_df3 %>%
+  pivot_longer(!Borough, names_to = 'Year', values_to = 'Ridership') %>%
+  group_by(Borough, Year) %>%
+  summarize(Avg_Ridership = mean(Ridership, na.rm = TRUE))
+```
+
+```{r}
+ggplot(data = avgMTA) +
+  geom_bar(mapping = aes(x = Year, y = Avg_Ridership, fill = Borough), stat = 'identity') +
+  facet_grid(~ Borough) +
+  theme(axis.text.x = element_text(angle = 70, hjust = 1)) +
+  labs(title = 'Average Riderhip from 2017 - 2022 by Borough')
+```
