@@ -1,0 +1,254 @@
+---
+title: "Data 607 - Week 10"
+author: "Shamecca Marshall"
+date: "2023-11-13"
+output:
+  html_document:
+    includes:
+      in_header: header.html
+    css: ./lab.css
+    highlight: pygments
+    theme: cerulean
+    toc: true
+    toc_float: true
+  pdf_document: default
+editor_options: 
+  chunk_output_type: console
+---
+
+**Assignment**
+In Text Mining with R, Chapter 2 looks at Sentiment Analysis. In this assignment, you should start by getting the primary example code from chapter 2 working in an R Markdown document. You should provide a citation to this base code. You’re then asked to extend the code in two ways:
+
+Work with a different corpus of your choosing, and
+Incorporate at least one additional sentiment lexicon (possibly from another R package that you’ve found through research).
+
+**Loading Libraries**
+```{r}
+library(tidytext)
+library(textdata) 
+library(janeaustenr)
+library(dplyr)
+library(stringr)
+library(tidyr)
+library(ggplot2)
+library(tidyverse)
+library(wordcloud)
+library(reshape2)
+library(harrypotter)
+library(RCurl)
+```
+
+**Jane Austen Dataset**
+```{r}
+# get linenumber and chapter 
+tidy_books <- austen_books() %>%
+  group_by(book) %>%
+  mutate(linenumber = row_number(),
+         chapter = cumsum(str_detect(text, 
+                                     regex("^chapter [\\divxlc]", 
+                                                 ignore_case = TRUE)))) %>%
+  ungroup() %>%
+  unnest_tokens(word, text)
+
+
+nrc_joy <- get_sentiments("nrc") %>% 
+  filter(sentiment == "joy")
+
+tidy_books %>%
+  filter(book == "Emma") %>%
+  inner_join(nrc_joy) %>%
+  count(word, sort = TRUE)
+```
+
+```{r}
+jane_austen_sentiment <- tidy_books %>%
+  inner_join(get_sentiments("bing")) %>%
+  count(book, index = linenumber %/% 80, sentiment) %>%
+  spread(sentiment, n, fill = 0) %>%
+  mutate(sentiment = positive - negative)
+
+
+
+ggplot(jane_austen_sentiment, aes(index, sentiment, fill = book)) +
+  geom_col(show.legend = FALSE) +
+  facet_wrap(~book, ncol = 2, scales = "free_x")
+```
+
+```{r}
+# compairing 3 sentiment dictionaries
+pride_prejudice <- tidy_books %>% 
+  filter(book == "Pride & Prejudice")
+
+pride_prejudice
+```
+
+```{r}
+afinn <- pride_prejudice %>% 
+  inner_join(get_sentiments("afinn")) %>% 
+  group_by(index = linenumber %/% 80) %>% 
+  summarise(sentiment = sum(value)) %>% 
+  mutate(method = "AFINN")
+
+bing_and_nrc <- bind_rows(pride_prejudice %>% 
+                            inner_join(get_sentiments("bing")) %>%
+                            mutate(method = "Bing et al."),
+                          pride_prejudice %>% 
+                            inner_join(get_sentiments("nrc") %>% 
+                                         filter(sentiment %in% c("positive", 
+                                                                 "negative"))) %>%
+                            mutate(method = "NRC")) %>%
+  count(method, index = linenumber %/% 80, sentiment) %>%
+  spread(sentiment, n, fill = 0) %>%
+  mutate(sentiment = positive - negative)
+
+get_sentiments("nrc") %>% 
+     filter(sentiment %in% c("positive", 
+                             "negative")) %>% 
+  count(sentiment)
+```
+
+```{r}
+get_sentiments("bing") %>% 
+  count(sentiment)
+```
+
+```{r}
+# most common positive and negative words
+bing_word_counts <- tidy_books %>%
+  inner_join(get_sentiments("bing")) %>%
+  count(word, sentiment, sort = TRUE) %>%
+  ungroup()
+
+bing_word_counts
+```
+
+```{r}
+bing_word_counts %>%
+  group_by(sentiment) %>%
+  top_n(10) %>%
+  ungroup() %>%
+  mutate(word = reorder(word, n)) %>%
+  ggplot(aes(word, n, fill = sentiment)) +
+  geom_col(show.legend = FALSE) +
+  facet_wrap(~sentiment, scales = "free_y") +
+  labs(
+    y = "Contribution to sentiment",
+    x = NULL
+  ) +
+  coord_flip()
+```
+
+```{r}
+custom_stop_words <- bind_rows(tibble(word = c("miss"), 
+                                          lexicon = c("custom")), 
+                               stop_words)
+
+custom_stop_words
+```
+
+```{r}
+# wordclouds
+tidy_books %>%
+  anti_join(stop_words) %>%
+  count(word) %>%
+  with(wordcloud(word, n, max.words = 100))
+```
+
+**New Corpus**
+	
+Alice's Adventures in Wonderland is a children's literature book written by Lewis Carroll.
+
+```{r}
+library(gutenbergr)
+gutenberg_metadata
+```
+
+**Convert Data to Tidy**
+
+```{r}
+count_of_Alice_Wonderland<- gutenberg_download(11) 
+count_of_Alice_Wonderland
+```
+**Using lexicon to perfom sentiment analysis**
+```{r}
+Alice_Wonderland_Chapters <- count_of_Alice_Wonderland %>% 
+  filter(text != "") %>%
+  mutate(linenumber = row_number(),
+         chapter = cumsum(str_detect(text, regex("CHAPTER [\\dIVXLC]", ignore_case =  TRUE)))) 
+
+Alice_Wonderland_Chapters
+```
+
+```{r}
+Alice_Wonderland_tidy <- Alice_Wonderland_Chapters %>% 
+  unnest_tokens(word, text) %>% 
+  inner_join(get_sentiments("loughran")) %>% 
+  count(word, sentiment, sort = TRUE) %>%
+  group_by(sentiment) %>%
+  top_n(10) %>% ungroup() %>% mutate(word = reorder(word, n)) %>%
+  anti_join(stop_words)
+
+names(Alice_Wonderland_tidy)<-c("word", "sentiment", "Freq")
+
+ggplot(data = Alice_Wonderland_tidy, aes(x = word, y = Freq, fill = sentiment)) + 
+  geom_bar(stat = "identity") + coord_flip() + facet_wrap(~sentiment, scales = "free_y") +
+  labs(y = "Contribution to sentiment",x = NULL) 
+```
+
+**Frequent used positive and negative words**
+The most frequent used words for positive sentiments and negative sentiments.
+```{r}
+Alice_Wonderland_Sentiment_total <- Alice_Wonderland_Chapters %>%
+  unnest_tokens(word, text) %>% inner_join(get_sentiments("bing")) %>%
+  count(word, sentiment, sort = TRUE) %>%
+  ungroup()
+
+Alice_Wonderland_Sentiment_total %>%
+  group_by(sentiment) %>%
+  top_n(10) %>%
+  ungroup() %>%
+  mutate(word = reorder(word, n)) %>%
+  ggplot(aes(word, n, fill = sentiment)) +
+  geom_col(show.legend = FALSE) +
+  facet_wrap(~sentiment, scales = "free_y") +
+  labs(y = "Contribution to sentiment",
+       x = NULL) +
+  coord_flip() +
+  geom_text(aes(label = n, hjust = 1.0))
+```
+
+**Chapter wise positive and negative words*
+```{r}
+Alice_Wonderland_Sentiment <- Alice_Wonderland_Chapters %>%
+  unnest_tokens(word, text) %>%
+  inner_join(get_sentiments("bing")) %>%
+  count(chapter, index = linenumber %/% 80, sentiment) %>%
+  spread(sentiment, n, fill = 0) %>%
+  mutate(sentiment = positive - negative)
+
+ggplot(Alice_Wonderland_Sentiment, aes(index, sentiment, fill = chapter)) +
+  geom_col(show.legend = FALSE) +
+  facet_wrap(~chapter, ncol = 2, scales = "free_x")
+```
+
+```{r}
+Positive_Negative_Count<- Alice_Wonderland_Chapters %>% 
+   unnest_tokens(word, text) %>%
+  inner_join(get_sentiments("afinn")) %>%
+  group_by(index = linenumber %/% 80, chapter)%>%
+  summarise(sentiment = sum(value))
+
+Positive_Negative_Count%>%
+  ggplot(aes(chapter, sentiment, fill=index)) +
+  geom_col()
+```
+
+**Wordcloud**
+The most common words in "Alice's Adventures in Wonderland."
+```{r}
+total_word_count <- Alice_Wonderland_Chapters %>% unnest_tokens(word, text) %>% 
+  anti_join(stop_words) %>%
+  count(word, sort = TRUE) %>% filter(word != "" )
+
+total_word_count %>% with(wordcloud(word, n, max.words = 100))
+```
