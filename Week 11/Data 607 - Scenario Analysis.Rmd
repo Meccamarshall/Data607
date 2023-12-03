@@ -1,0 +1,53 @@
+## Assignment Instructions
+
+Your task is to analyze an existing recommender system that you find interesting. You should:
+
+Perform a Scenario Design analysis as described below. Consider whether it makes sense for your selected recommender system to perform scenario design twice, once for the organization (e.g. Amazon.com) and once for the organization’s customers. Attempt to reverse engineer what you can about the site, from the site interface and any available information that you can find on the Internet or elsewhere. Include specific recommendations about how to improve the site’s recommendation capabilities going forward. Create your report using an R Markdown file, and create a discussion thread with a link to the GitHub repo where your Markdown file notebook resides. You are not expected to need to write code for this discussion assignment.
+
+![](/Users/MECCA/Downloads/ScenarioDesign(2).png){width="100%"}
+
+# Introduction
+I am choosing to analyze Spotify.Spotify is a digital music, podcast, and video service that gives you access to millions of songs and other content from creators all over the world. One of my favorite features are their weekly curated playlist, one of them being the "Discover Weekly" playlist that opens my ears, heart, and soul to amazing music.
+
+![](/Users/MECCA/Desktop/Screen Shot 2023-12-02 at 2.36.21 PM.png){width="100%"}
+
+# Scenario Analysis
+### 1) Who are the target users?
+
+Spotify's target ursers are both casual and dedicated music listeners. Spotify's target users are located all throughout the world, with. Even though most users are young adults, there are still alot of older adults who enjoy using this music streaming app.
+
+#### 2) What are the key goals?
+- Maximizing user's  satisfaction
+- Keep their users engaged
+- Create unique playlists and music for each users with a wide variety so that their users could discover music daily. 
+
+
+### 3) How can you help them accomplish the goals?
+- Engage with the playlists that they create by liking and disliking songs
+- Use voice recognition to help determine my mood.
+- Share playlists
+
+# Reverse Engineering
+### There are three types of Spotify playlists :
+
+### 1) Personalized playlists: 
+They’re created by algorithms that look at lots of external and individual factors, including what the listener is listening to and when, which songs they're adding to their playlists, the listening habits of people who have similar tastes, and much more.
+
+### 2) Editorial playlists:
+They’re curated by Spotify's playlist editors. Their editors are genre, lifestyle, and culture specialists with diverse backgrounds. Many playlists have several editors in different locations to find music from all around the world.
+
+### 3) Listener playlists: 
+Spotify listeners have created millions of playlists. They’re a great way to understand your fans, get a sense of how your music resonates, and how your reach has grown.
+
+Discover Weekly falls under the personalized playlist umbrella. This is created based on what the user have been listening to.
+![](/Users/MECCA/Downloads/5ee14291ac02f065f016ce64_discover weekly infographic-p-1080.png){width=100%}
+
+# Recommendations for Improvement
+
+- Creating a dislike button to help find songs that a listener would not like
+- Use voice recognition to help determine my mood.
+![](/Users/MECCA/Desktop/Screen Shot 2023-12-02 at 7.58.53 PM.png){width=100%}
+
+[Types of Spotify playlists](https://support.spotify.com/us/artists/article/types-of-spotify-playlists/)
+
+[What is Spotify?](https://support.spotify.com/us/article/what-is-spotify/. )
