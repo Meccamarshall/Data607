@@ -1,0 +1,79 @@
+---
+title: "Data Science in Context - Color Blindness"
+author: "Shamecca Marshall"
+output:
+  pdf_document: default
+  html_document:
+---
+
+```{r setup, include=FALSE}
+library(ggplot2)
+library(RColorBrewer)
+library(MASS)
+```
+# Designing Color Blindness friendly graphs
+## What is Color Blindess?  
+
+* Color blindness is a reduced ability to distinguish between colors when compared to the standard for normal human color vision. 
+* Color blindness affects 1 in 12 men and 1 in 200 women.
+* Sometimes color blindness is called "Red-Green Color blindness" since red and green are the two colors that are typically most difficult to distinguish by color blind individuals. Color blindness also makes it difficult to distinguish blues and yellows as well.
+
+![](/Users/MECCA/Desktop/image-3.png)   
+
+## Color Brewer Online   
+[https://colorbrewer2.org](https://colorbrewer2.org)  
+![](/Users/MECCA/Desktop/Screen Shot 2023-12-10 at 2.50.13 PM.png)      
+
+## RColorBrewer Package  
+
+* Visual representation of available colors. Each set has a name, which can be called in code.
+```{r display.brewer.all-example}
+display.brewer.all(n=5,type='div',colorblindFriendly=TRUE)
+```
+
+
+```{r brewer.pal-example}
+brewer.pal(5,"Accent")
+```
+
+### Qualitative Data  
+Qualitative schemes are used to symbolize data having no inherent order (i.e. categorical data). Different hues with equal lightness and saturation values are normally used to distinguish different categorical values.
+#### Color Blind Friendly Options    
+```{r qualitative-color-options}
+display.brewer.all(n=NULL,type='qual', colorblindFriendly=TRUE)
+```    
+  
+#### Graph   
+```{r qualitative-scatterplot }
+ggplot(mtcars, aes(x=as.factor(cyl), fill=as.factor(cyl) )) + 
+  geom_bar( ) +
+  scale_fill_brewer(palette = "Dark2") +
+  theme(legend.position="none")
+```
+
+### Sequential Example
+A well designed sequential color scheme ranges from a light color (representing low attribute values) to a dark color (representing high attribute values).
+#### Color Blind Friendly Options     
+```{r sequential-color-options}
+display.brewer.all(n=NULL,type='seq',colorblindFriendly=TRUE)
+```  
+
+
+#### Graph  
+```{r sequential-scatterplot}
+ggplot(data = midwest, aes(x = area, y = poptotal)) + 
+geom_point(aes(col=state, size=popdensity)) + 
+  ggtitle("Area Vs Population") +
+  theme(plot.title = element_text(hjust = 0.5)) +
+  scale_color_brewer(palette='YlOrRd')
+```
+
+
+### Resources  
+
+*[https://cran.r-project.org/web/packages/RColorBrewer/RColorBrewer.pdf](https://cran.r-project.org/web/packages/RColorBrewer/RColorBrewer.pdf)  
+*[https://colormax.org/resources/types-of-colorblindness/#close](https://colormax.org/resources/types-of-colorblindness/#close)  
+*[https://enchroma.com/blogs/beyond-color/interesting-facts-about-color-blindness](https://enchroma.com/blogs/beyond-color/interesting-facts-about-color-blindnessl)  
+*[https://www.bloglovin.com/blogs/bored-panda-7181743/youll-be-amazed-how-people-with-color-blindness-5408746899](https://www.bloglovin.com/blogs/bored-panda-7181743/youll-be-amazed-how-people-with-color-blindness-5408746899)
+
+
