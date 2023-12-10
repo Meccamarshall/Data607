@@ -1,0 +1,105 @@
+---
+title: "Data 607 - Assignment 9"
+author: "Shamecca Marshall"
+date: "2023-11-05"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Assignment - Web APIs
+The New York Times web site provides a rich set of APIs, as described here: [https://developer.nytimes.com/apis]( https://developer.nytimes.com/apis) You’ll need to start by signing up for an API key. Your task is to choose one of the New York Times APIs, construct an interface in R to read in the JSON data, and transform it into an R DataFrame.
+
+# Libraries 
+```{r}
+# load libraries
+library("httr")
+library("jsonlite")
+library("dplyr")
+library("kableExtra")
+library("stringr")
+library("ggplot2")
+library("tidyverse")
+```
+
+# Connecting API
+I will be using the Top stories API, filtered for the following section:
+- Fashion
+
+Let’s first read in the data from the API:
+```{r}
+# API Key
+apikey <- "Jb1d6yqzl4VulbGuWbH0BbCMSPjfowxg"
+
+# Get the URL 
+theURL <- paste("https://api.nytimes.com/svc/topstories/v2/fashion.json?api-key=", apikey)
+
+fashionstories <- GET(theURL)
+
+# Get status code
+fashionstories$status_code
+```
+
+```{r}
+summary(fashionstories)
+```
+
+```{r}
+fashion_stories <- content(fashionstories, as = "text")
+```
+
+Data Frame Conversion
+```{r}
+fashion_stories2 <- fromJSON(fashion_stories, flatten = TRUE)
+fashion_stories2 <- data.frame(fashion_stories2$results, stringsAsFactors = FALSE)
+
+#Get column names
+colnames(fashion_stories2)
+```
+
+```{r}
+#Rename columns
+colnames(fashion_stories2) <- c("Section","Subsection", "Title", "Abstract", "URL", "URI", "Byline", "Item_Type", "Updated_Date", "Created_Date", "Published_Date", "Material_Type_Facet", "Kicker", "Des_Facet", "Org_Facet", "Per_Facet", "Geo_Facet", "Multimedia", "Short_Url")
+
+#Drop columns not needed
+fashion_stories3 <- fashion_stories2[, -c(12:18)]
+```
+
+# Data Analysis
+```{r}
+#Count of Section
+Section <- fashion_stories3%>%
+  group_by(Section)%>%
+  summarise(num=n())%>%
+  arrange(desc(num))
+head(Section)
+```
+
+```{r}
+#Count of Subsection
+Subsection <- fashion_stories3%>%
+  group_by(Subsection)%>%
+  summarise(num=n())%>%
+  arrange(desc(num))
+head(Subsection)
+```
+
+# Plots
+The bar plot below shows that plenty of the articles belong to the fashion section followed by style and t-magazine.
+```{r}
+# Bar Plot for Section
+fashion_stories3 %>% 
+ggplot(aes(x = Section)) +
+  geom_bar(fill = "hotpink")
+```
+Within the next bar plot there is an unknown subsection that has the highest count followed by Africa and design.
+```{r}
+# Bar Plot for Subsection
+fashion_stories3 %>% 
+ggplot(aes(x = Subsection)) +
+  geom_bar(fill = "hotpink4")
+```
